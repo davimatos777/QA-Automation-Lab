@@ -1,0 +1,21 @@
+{
+  "name": "qa-automation-lab-playwright-postman-k6",
+  "version": "1.0.0",
+  "description": "Laboratório de QA Automation com Postman, Playwright e k6.",
+  "scripts": {
+    "serverest": "npx serverest@latest",
+    "test:postman": "newman run postman/collections/ServeRest-Advanced.postman_collection.json -e postman/environments/ServeRest-Local.postman_environment.json -r cli,html --reporter-html-export postman/reports/newman-report.html",
+    "playwright:install": "cd playwright && npm install && npx playwright install",
+    "playwright:test": "cd playwright && npm test",
+    "k6:smoke": "k6 run k6/scripts/smoke-test.js",
+    "k6:load": "k6 run k6/scripts/load-test.js",
+    "k6:stress": "k6 run k6/scripts/stress-test.js",
+    "k6:spike": "k6 run k6/scripts/spike-test.js",
+    "k6:soak": "k6 run k6/scripts/soak-test.js",
+    "k6:e2e": "k6 run k6/scripts/e2e-flow-test.js"
+  },
+  "devDependencies": {
+    "newman": "^6.2.1",
+    "newman-reporter-html": "^1.0.5"
+  }
+}

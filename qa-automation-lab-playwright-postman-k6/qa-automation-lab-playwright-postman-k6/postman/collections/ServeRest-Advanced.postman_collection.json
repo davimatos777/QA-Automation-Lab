@@ -1,0 +1,3725 @@
+{
+  "info": {
+    "_postman_id": "e940d26a-f5bc-4110-95f3-qa-lab",
+    "name": "ServeRest Advanced API Quality Gate",
+    "description": "Collection avançada para validação da API ServeRest com massa dinâmica, autenticação, autorização, cenários positivos, negativos e fluxo E2E.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 - Health Check",
+      "item": [
+        {
+          "name": "GET /usuarios - API online",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /produtos - API online",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /carrinhos - API online",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Usuários",
+      "item": [
+        {
+          "name": "Criar administrador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{adminName}}\",\n  \"email\": \"{{emailAdmin}}\",\n  \"password\": \"{{passwordAdmin}}\",\n  \"administrador\": \"true\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const timestamp = Date.now();",
+                  "pm.environment.set(\"emailAdmin\", `admin.qa.${timestamp}@serverest.com`);",
+                  "pm.environment.set(\"passwordAdmin\", \"Senha@123\");",
+                  "pm.environment.set(\"adminName\", `Admin QA ${timestamp}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar mensagem e id\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "  pm.environment.set(\"adminId\", response._id);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar usuário comum",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{userName}}\",\n  \"email\": \"{{emailUser}}\",\n  \"password\": \"{{passwordUser}}\",\n  \"administrador\": \"false\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const timestamp = Date.now();",
+                  "pm.environment.set(\"emailUser\", `user.qa.${timestamp}@serverest.com`);",
+                  "pm.environment.set(\"passwordUser\", \"Senha@123\");",
+                  "pm.environment.set(\"userName\", `User QA ${timestamp}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar mensagem e id\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "  pm.environment.set(\"userId\", response._id);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar usuários",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Contrato de lista de usuários\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"quantidade\");",
+                  "  pm.expect(response).to.have.property(\"usuarios\");",
+                  "  pm.expect(response.usuarios).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar usuário por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{userId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Contrato de usuário\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"nome\");",
+                  "  pm.expect(response).to.have.property(\"email\");",
+                  "  pm.expect(response).to.have.property(\"password\");",
+                  "  pm.expect(response).to.have.property(\"administrador\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar usuário comum",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{userId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{userName}} Atualizado\",\n  \"email\": \"{{emailUser}}\",\n  \"password\": \"{{passwordUser}}\",\n  \"administrador\": \"false\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar mensagem\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response.message).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar usuário sem nome",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sem.nome@serverest.com\",\n  \"password\": \"Senha@123\",\n  \"administrador\": \"false\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar usuário sem e-mail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Usuário Sem Email\",\n  \"password\": \"Senha@123\",\n  \"administrador\": \"false\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar usuário com e-mail inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Email Inválido\",\n  \"email\": \"email-invalido\",\n  \"password\": \"Senha@123\",\n  \"administrador\": \"false\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar usuário com e-mail já cadastrado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Duplicado\",\n  \"email\": \"{{emailUser}}\",\n  \"password\": \"{{passwordUser}}\",\n  \"administrador\": \"false\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar usuário inexistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/id-inexistente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "id-inexistente"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir usuário inexistente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/id-inexistente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "id-inexistente"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Login",
+      "item": [
+        {
+          "name": "Login administrador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailAdmin}}\",\n  \"password\": \"{{passwordAdmin}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar token do admin\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"authorization\");",
+                  "  pm.expect(response.authorization).to.be.a(\"string\");",
+                  "  pm.environment.set(\"tokenAdmin\", response.authorization);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login usuário comum",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailUser}}\",\n  \"password\": \"{{passwordUser}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar token do usuário comum\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"authorization\");",
+                  "  pm.expect(response.authorization).to.be.a(\"string\");",
+                  "  pm.environment.set(\"tokenUser\", response.authorization);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login com senha inválida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailUser}}\",\n  \"password\": \"senhaErrada\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login com e-mail inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"inexistente@serverest.com\",\n  \"password\": \"Senha@123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login sem e-mail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"Senha@123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login sem senha",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"teste@serverest.com\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login com body vazio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Produtos",
+      "item": [
+        {
+          "name": "Criar produto com admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{dynamicProductName}}\",\n  \"preco\": 150,\n  \"descricao\": \"{{dynamicProductDescription}}\",\n  \"quantidade\": 20\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const timestamp = Date.now();",
+                  "pm.environment.set(\"dynamicProductName\", `Produto QA ${timestamp}`);",
+                  "pm.environment.set(\"dynamicProductDescription\", `Produto criado via Postman em ${timestamp}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve criar produto e salvar ID\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "  pm.environment.set(\"productId\", response._id);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar produtos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Contrato de lista de produtos\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"quantidade\");",
+                  "  pm.expect(response).to.have.property(\"produtos\");",
+                  "  pm.expect(response.produtos).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar produto por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "{{productId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Contrato de produto\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"nome\");",
+                  "  pm.expect(response).to.have.property(\"preco\");",
+                  "  pm.expect(response).to.have.property(\"descricao\");",
+                  "  pm.expect(response).to.have.property(\"quantidade\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar produto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "{{productId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{dynamicProductName}} Atualizado\",\n  \"preco\": 199,\n  \"descricao\": \"Produto atualizado via Postman\",\n  \"quantidade\": 15\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar mensagem\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response.message).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar produto sem token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Produto Sem Token\",\n  \"preco\": 50,\n  \"descricao\": \"Sem token\",\n  \"quantidade\": 5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar produto com token de usuário comum",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Produto Usuario Comum\",\n  \"preco\": 50,\n  \"descricao\": \"Token comum\",\n  \"quantidade\": 5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar produto com nome repetido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{dynamicProductName}} Atualizado\",\n  \"preco\": 199,\n  \"descricao\": \"Produto duplicado\",\n  \"quantidade\": 15\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar produto sem preço",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Produto Sem Preço\",\n  \"descricao\": \"Sem preço\",\n  \"quantidade\": 5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar produto com preço negativo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Produto Preço Negativo\",\n  \"preco\": -1,\n  \"descricao\": \"Preço inválido\",\n  \"quantidade\": 5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar produto com quantidade negativa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Produto Quantidade Negativa\",\n  \"preco\": 10,\n  \"descricao\": \"Qtd inválida\",\n  \"quantidade\": -5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar produto inexistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/produto-inexistente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "produto-inexistente"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Carrinhos",
+      "item": [
+        {
+          "name": "Criar carrinho com produto válido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"produtos\": [\n    {\n      \"idProduto\": \"{{productId}}\",\n      \"quantidade\": 1\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve criar carrinho e salvar ID\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "  pm.environment.set(\"cartId\", response._id);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar carrinhos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Contrato de lista de carrinhos\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"quantidade\");",
+                  "  pm.expect(response).to.have.property(\"carrinhos\");",
+                  "  pm.expect(response.carrinhos).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar carrinho por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos/{{cartId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos",
+                "{{cartId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Contrato de carrinho\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"produtos\");",
+                  "  pm.expect(response).to.have.property(\"precoTotal\");",
+                  "  pm.expect(response).to.have.property(\"quantidadeTotal\");",
+                  "  pm.expect(response).to.have.property(\"idUsuario\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar segundo carrinho para mesmo usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"produtos\": [\n    {\n      \"idProduto\": \"{{productId}}\",\n      \"quantidade\": 1\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar carrinho sem token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"produtos\": [\n    {\n      \"idProduto\": \"{{productId}}\",\n      \"quantidade\": 1\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar carrinho com produto inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"produtos\": [\n    {\n      \"idProduto\": \"produto-inexistente\",\n      \"quantidade\": 1\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar carrinho com quantidade maior que estoque",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"produtos\": [\n    {\n      \"idProduto\": \"{{productId}}\",\n      \"quantidade\": 99999\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar carrinho inexistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos/carrinho-inexistente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos",
+                "carrinho-inexistente"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Concluir compra",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos/concluir-compra",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos",
+                "concluir-compra"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar mensagem\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response.message).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Fluxo E2E",
+      "item": [
+        {
+          "name": "E2E - Criar admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{adminName}}\",\n  \"email\": \"{{emailAdmin}}\",\n  \"password\": \"{{passwordAdmin}}\",\n  \"administrador\": \"true\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const timestamp = Date.now();",
+                  "pm.environment.set(\"emailAdmin\", `admin.qa.${timestamp}@serverest.com`);",
+                  "pm.environment.set(\"passwordAdmin\", \"Senha@123\");",
+                  "pm.environment.set(\"adminName\", `Admin QA ${timestamp}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar mensagem e id\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "  pm.environment.set(\"adminId\", response._id);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E2E - Login admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailAdmin}}\",\n  \"password\": \"{{passwordAdmin}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar token do admin\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"authorization\");",
+                  "  pm.expect(response.authorization).to.be.a(\"string\");",
+                  "  pm.environment.set(\"tokenAdmin\", response.authorization);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E2E - Criar produto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{dynamicProductName}}\",\n  \"preco\": 300,\n  \"descricao\": \"Produto do fluxo E2E\",\n  \"quantidade\": 5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const timestamp = Date.now();",
+                  "pm.environment.set(\"dynamicProductName\", `Produto QA ${timestamp}`);",
+                  "pm.environment.set(\"dynamicProductDescription\", `Produto criado via Postman em ${timestamp}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve criar produto e salvar ID\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "  pm.environment.set(\"productId\", response._id);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E2E - Criar comprador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{userName}}\",\n  \"email\": \"{{emailUser}}\",\n  \"password\": \"{{passwordUser}}\",\n  \"administrador\": \"false\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const timestamp = Date.now();",
+                  "pm.environment.set(\"emailUser\", `user.qa.${timestamp}@serverest.com`);",
+                  "pm.environment.set(\"passwordUser\", \"Senha@123\");",
+                  "pm.environment.set(\"userName\", `User QA ${timestamp}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar mensagem e id\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "  pm.environment.set(\"userId\", response._id);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E2E - Login comprador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailUser}}\",\n  \"password\": \"{{passwordUser}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar token do usuário comum\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"authorization\");",
+                  "  pm.expect(response.authorization).to.be.a(\"string\");",
+                  "  pm.environment.set(\"tokenUser\", response.authorization);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E2E - Criar carrinho",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"produtos\": [\n    {\n      \"idProduto\": \"{{productId}}\",\n      \"quantidade\": 1\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve criar carrinho e salvar ID\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "  pm.environment.set(\"cartId\", response._id);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E2E - Validar carrinho",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos/{{cartId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos",
+                "{{cartId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Contrato de carrinho\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"produtos\");",
+                  "  pm.expect(response).to.have.property(\"precoTotal\");",
+                  "  pm.expect(response).to.have.property(\"quantidadeTotal\");",
+                  "  pm.expect(response).to.have.property(\"idUsuario\");",
+                  "  pm.expect(response).to.have.property(\"_id\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E2E - Concluir compra",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos/concluir-compra",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos",
+                "concluir-compra"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status deve ser 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Deve retornar mensagem\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response).to.have.property(\"message\");",
+                  "  pm.expect(response.message).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E2E - Validar carrinho concluído",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos/{{cartId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos",
+                "{{cartId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - Testes Negativos",
+      "item": [
+        {
+          "name": "POST /usuarios com body vazio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /produtos com body vazio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /carrinhos com body vazio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET usuário com ID mal formatado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/@@@",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "@@@"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET produto com ID mal formatado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/@@@",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "@@@"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET carrinho com ID mal formatado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos/@@@",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos",
+                "@@@"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "07 - Segurança Básica",
+      "item": [
+        {
+          "name": "Criar produto sem autenticação",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Sem Auth\",\n  \"preco\": 10,\n  \"descricao\": \"Teste\",\n  \"quantidade\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar produto com token inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer token-invalido-para-teste"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Token Inválido\",\n  \"preco\": 10,\n  \"descricao\": \"Teste\",\n  \"quantidade\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar produto sem autenticação",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "{{productId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Sem Auth Update\",\n  \"preco\": 10,\n  \"descricao\": \"Teste\",\n  \"quantidade\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar produto com token inválido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer token-invalido-para-teste"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "{{productId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Invalid Update\",\n  \"preco\": 10,\n  \"descricao\": \"Teste\",\n  \"quantidade\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir produto sem autenticação",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "{{productId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir produto com token inválido",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer token-invalido-para-teste"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "{{productId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar carrinho com token inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer token-invalido-para-teste"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"produtos\": [\n    {\n      \"idProduto\": \"{{productId}}\",\n      \"quantidade\": 1\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
+                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.authorization).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08 - Limpeza de Massa",
+      "item": [
+        {
+          "name": "Cancelar carrinho pendente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenUser}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrinhos/cancelar-compra",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrinhos",
+                "cancelar-compra"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar 200 ou erro controlado se não houver carrinho\", function () {",
+                  "  pm.expect([200, 400]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir produto criado",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{tokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/produtos/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "produtos",
+                "{{productId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar 200, 400 ou 404 em limpeza\", function () {",
+                  "  pm.expect([200, 400, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir usuário comum",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{userId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar 200 ou 400 em limpeza\", function () {",
+                  "  pm.expect([200, 400]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir administrador",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{adminId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{adminId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deve retornar 200 ou 400 em limpeza\", function () {",
+                  "  pm.expect([200, 400]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Tempo de resposta menor que 1000ms\", function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta deve ser JSON quando houver body\", function () {",
+                  "  const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+                  "  pm.expect(contentType).to.include(\"application/json\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Script global da collection.",
+          "// Requests específicos criam suas próprias massas dinâmicas quando necessário."
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Teste global para registrar status e tempo no console do Postman.",
+          "console.log(`${pm.request.method} ${pm.request.url} -> ${pm.response.code} em ${pm.response.responseTime}ms`);"
+        ]
+      }
+    }
+  ]
+}
