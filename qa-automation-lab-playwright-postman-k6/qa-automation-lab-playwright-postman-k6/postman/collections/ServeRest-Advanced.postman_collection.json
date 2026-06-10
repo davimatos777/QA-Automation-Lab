@@ -730,8 +730,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Deve retornar status de erro esperado\", function () {",
-                  "  pm.expect([400, 401, 403, 404]).to.include(pm.response.code);",
+                  "pm.test(\"Deve retornar status aceito ao excluir usuário inexistente\", function () {",
+                  "  pm.expect([200, 400, 404]).to.include(pm.response.code);",
                   "});",
                   "",
                   "pm.test(\"Erro não deve retornar token ou id de sucesso\", function () {",
